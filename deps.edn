@@ -1,8 +1,9 @@
-{:deps    {org.clojure/clojure {:mvn/version "1.10.0"}
+{:deps    {org.clojure/clojure {:mvn/version "1.10.1"}
            cheshire            {:mvn/version "5.8.1"}}
  :aliases {:native-image {:extra-deps {clj.native-image {:git/url "https://github.com/taylorwood/clj.native-image.git"
-                                                         :sha     "498baa963e914fd817dbf33ea251729efd0c8f95"}}
+                                                         :sha     "e480cb92b9a85913b3bcad9d878db237d810f286"}}
                           :main-opts  ["-m clj.native-image optikon.core"
+                                       "--initialize-at-build-time"
                                        "--language:js"
                                        "-H:Name=optikon"]}
-           :jvm-opts   ["-Dclojure.compiler.direct-linking=true"]}}
+           :jvm-opts     ["-Dclojure.compiler.direct-linking=true"]}}
