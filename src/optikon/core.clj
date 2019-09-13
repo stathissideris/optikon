@@ -1,7 +1,11 @@
 (ns optikon.core
-  (:require [cheshire.core :as json])
-  (:import [org.graalvm.polyglot Context Value])
+  (:require [cheshire.core :as json]
+            [clojure.java.io :as io]
+            [clojure.string :as str])
+  (:import [org.graalvm.polyglot Context Value Source])
   (:gen-class))
+
+;; https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/Source.html
 
 (set! *warn-on-reflection* true)
 
@@ -19,9 +23,15 @@
       (.allowAllAccess true)
       (.build)))
 
-(defn -main [& args]
-  (let [ctx (context-js)]
-    (println "Sanity check:" (.asInt (eval-js ctx "1+1+1+1")))))
+(defn source [filename]
+  (let [file (io/file filename)
+        lang (Source/findLanguage file)]
+    ;;(println lang "detected")
+    (-> (Source/newBuilder lang file) .build)))
+
+(defn -main [filename]
+  (let [^Context ctx (context-js)]
+    (println (str (.eval ctx (source filename))))))
 
 (comment
   (def ctx (context-js))
@@ -29,15 +39,57 @@
 
   (defonce code
     (papply str
-            (slurp "https://cdn.jsdelivr.net/npm/vega@5.3.0")
-            (slurp "https://cdn.jsdelivr.net/npm/vega-lite@3.0.0-rc15")
-            (slurp "https://cdn.jsdelivr.net/npm/vega-embed@4.0.0-rc1")))
+            (slurp "https://cdnjs.cloudflare.com/ajax/libs/vega/5.6.0/vega.js")
+            (slurp "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/3.4.0/vega-lite.js")
+            (slurp "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/5.1.2/vega-embed.min.js")))
 
   (eval-js ctx code)
 
-  )
+  (do
+    (def ctx (context-js))
+    ;;(.eval ctx (source "/Users/sideris/devel/third-party/vega-lite/build/vega-lite.js"))
+    (.eval ctx (source "resources/vega-lite.js"))
+    (.eval ctx (source "resources/vega.js"))
+    (val->clj (eval-js ctx "Object.keys(vegaLite)"))
+    (val->clj (eval-js ctx "vegaLite.version"))
+    (val->clj (eval-js ctx "Object.keys(vega)"))
+
+    (val->clj (eval-js ctx (str "vegaLite.compile(" (str/replace (slurp "test-resources/bar.json") "\n" " ") ");")))
+    (val->clj (eval-js ctx (str "vegaLite.compile({})")))
 
 
-;; compile with:
-;;
-;; clojure -A:native-image && mv js optikon
+    ;; https://github.com/vega/vega/tree/master/packages/vega-scenegraph
+    ;; https://github.com/vega/vega/blob/master/packages/vega-scenegraph/test/svg-string-renderer-test.js
+
+    (sort (into [] (val->clj (eval-js ctx "Object.keys(vega)"))))
+
+    (val->clj (eval-js ctx (str "vega.resetSVGClipId();"
+                                "new vega.SVGStringRenderer()"
+                                ".initialize(null, 400, 300)"
+                                ".render(" (slurp "test-resources/bar.json") ")"
+                                ".svg();")))
+    ))
+
+(defmulti val->clj
+  (fn [^Value x]
+    ;;(prn (bean x))
+    (cond (.isString x)         :string
+          (.hasArrayElements x) :array
+          (.hasMembers x)       :map
+          :else                 :other)))
+
+(defmethod val->clj :string
+  [^Value x]
+  (.asString x))
+
+(defmethod val->clj :map
+  [^Value x]
+  (.as x java.util.Map))
+
+(defmethod val->clj :array
+  [^Value x]
+  (.as x java.util.List))
+
+(defmethod val->clj :other
+  [x]
+  x)
