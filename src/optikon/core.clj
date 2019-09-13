@@ -60,6 +60,7 @@
 
     ;; https://github.com/vega/vega/tree/master/packages/vega-scenegraph
     ;; https://github.com/vega/vega/blob/master/packages/vega-scenegraph/test/svg-string-renderer-test.js
+    ;; https://github.com/vega/vega/blob/master/packages/vega-cli/src/render.js
 
     (sort (into [] (val->clj (eval-js ctx "Object.keys(vega)"))))
 
@@ -68,7 +69,23 @@
                                 ".initialize(null, 400, 300)"
                                 ".render(" (slurp "test-resources/bar.json") ")"
                                 ".svg();")))
+
+    (.eval ctx (source "resources/render.js"))
+    (val->clj (eval-js ctx (str "render(" (slurp "test-resources/bar.json") ")")))
     ))
+
+(comment
+  (def ctx (context-js))
+
+  (do
+    (.eval ctx (source "resources/vega-lite.js"))
+    (.eval ctx (source "resources/vega.js"))
+    (.eval ctx (source "resources/render.js")))
+
+  (val->clj (eval-js ctx (str "x = render(" (slurp "test-resources/bar.json") ")")))
+  (val->clj (eval-js ctx "Object.keys(x)"))
+  (eval-js ctx "x")
+  )
 
 (defmulti val->clj
   (fn [^Value x]
