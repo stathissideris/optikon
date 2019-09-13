@@ -78,13 +78,14 @@
   (def ctx (context-js))
 
   (do
-    (.eval ctx (source "resources/vega-lite.js"))
     (.eval ctx (source "resources/vega.js"))
+    (.eval ctx (source "resources/vega-lite.js"))
     (.eval ctx (source "resources/render.js")))
 
-  (val->clj (eval-js ctx (str "x = render(" (slurp "test-resources/bar.json") ")")))
-  (val->clj (eval-js ctx "Object.keys(x)"))
+  (eval-js ctx (str "x = render(" (slurp "test-resources/bar.vg.json") ")"))
+  (eval-js ctx (str "x = render(" (slurp "test-resources/bar-lite.vg.json") ")"))
   (eval-js ctx "x")
+  (spit "/tmp/svg.svg" @(.asHostObject (eval-js ctx "x"))) ;;WORKS!
   )
 
 (defmulti val->clj
