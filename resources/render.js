@@ -5,7 +5,7 @@ const scale = 1;
 
 function render(spec) {
   if (spec['$schema'] == 'https://vega.github.io/schema/vega-lite/v4.json') {
-    spec = vegaLite.compile(spec);
+    spec = vegaLite.compile(spec)['spec'];
   }
 
   const view = new vega.View(vega.parse(spec, config), {

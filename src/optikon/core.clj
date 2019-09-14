@@ -80,12 +80,14 @@
   (do
     (.eval ctx (source "resources/vega.js"))
     (.eval ctx (source "resources/vega-lite.js"))
-    (.eval ctx (source "resources/render.js")))
+    (.eval ctx (source "resources/render.js"))
+    )
 
   (eval-js ctx (str "x = render(" (slurp "test-resources/bar.vg.json") ")"))
   (eval-js ctx (str "x = render(" (slurp "test-resources/bar-lite.vg.json") ")"))
   (eval-js ctx "x")
-  (spit "/tmp/svg.svg" @(.asHostObject (eval-js ctx "x"))) ;;WORKS!
+  ;;WORKS!
+  (spit "/tmp/svg2.svg" @(.asHostObject (eval-js ctx "x")))
   )
 
 (defmulti val->clj
