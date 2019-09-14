@@ -4,7 +4,7 @@ const loglevel = vega.Warn;
 const scale = 1;
 
 function render(spec) {
-  if (spec['$schema'] == 'https://vega.github.io/schema/vega-lite/v4.json') {
+  if (spec['$schema'].includes('vega-lite')) {
     spec = vegaLite.compile(spec)['spec'];
   }
 
