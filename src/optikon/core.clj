@@ -2,10 +2,10 @@
   (:require [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.string :as str])
-  (:import [org.graalvm.polyglot Context Value Source])
-  (:gen-class))
+  (:import [org.graalvm.polyglot Context Value Source]))
 
 ;; https://www.graalvm.org/sdk/javadoc/org/graalvm/polyglot/Source.html
+;; https://www.graalvm.org/docs/reference-manual/embed/
 
 (set! *warn-on-reflection* true)
 
