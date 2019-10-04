@@ -5,6 +5,9 @@ powerful visualization JS libraries. Some
 [examples](https://vega.github.io/vega-lite/examples/) of what you can
 do with vega-lite.
 
+This project is still under development and there is no released
+version yet.
+
 ## Differences to vega
 
 - Supports EDN input files
