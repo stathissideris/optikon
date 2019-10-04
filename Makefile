@@ -4,11 +4,12 @@ get-vega:
 native:
 	clj -A:native-image
 clean:
+	rm -rf test-results
 	rm -rf classes
 	rm -rf optikon
 	rm -rf *.svg
 test-native:
-	mkdir test-results
+	mkdir -p test-results
 	./optikon test-resources/bar-lite.vg.edn test-results/bar-lite.vg.edn.svg
 	./optikon test-resources/bar-lite.vg.json test-results/bar-lite.vg.json.svg
 	./optikon test-resources/bar.vg.json test-results/bar.vg.json.svg
