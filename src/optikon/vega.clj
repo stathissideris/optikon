@@ -22,5 +22,5 @@
     (->> (str "render(" input ")")
          (js/eval ctx)
          .asHostObject
-         deref
+         .get
          (spit out-filename))))

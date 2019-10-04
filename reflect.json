@@ -1,6 +1,6 @@
 [
   {
-    "name": "clojure.lang.Atom",
+    "name": "java.util.concurrent.CompletableFuture",
     "allPublicConstructors" : true,
     "allPublicMethods": true
   }

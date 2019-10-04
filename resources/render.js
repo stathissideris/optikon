@@ -14,8 +14,8 @@ function render(spec) {
     renderer: 'none'
   }).finalize();
 
-  var Atom = Java.type('clojure.lang.Atom');
-  atom = new Atom(null);
-  view.toSVG(scale).then(svg => atom.reset(svg));
-  return atom;
+  var Future = Java.type('java.util.concurrent.CompletableFuture');
+  svgFuture = new Future();
+  view.toSVG(scale).then(svg => svgFuture.complete(svg));
+  return svgFuture;
 }
